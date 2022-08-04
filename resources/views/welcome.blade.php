@@ -18,9 +18,7 @@
             @endforeach
         </select>
 
-        <div id="questions" class="form-control d-flex justify-content-center align-items-center flex-column">
-{{--            <h4>{{ $questions[0]->title }}</h4>--}}
-        </div>
+        <div id="questions" class="form-control d-flex justify-content-center align-items-center flex-column"></div>
         <div id="diagnos"></div>
 {{--        <div id="app">--}}
 {{--            <test-component></test-component>--}}
