@@ -37,75 +37,49 @@ $('#ajax-selector').change(function (event) {
 let j = 0;
 // Хук ответа
 function hook($question_id, $answer, object) {
-    j++;
-
-    // Если откат - удаляем блоки после ответа
-    // И присваиваем значение из массива по ID
-    answers.forEach(function(elem) {
-        if (elem['answer'] === $answer && elem['question_id'] === $question_id && !result.includes(elem['id'])) {
-            // console.log(result);
-            result.push(elem['id']);
-        }
-    });
+    // j++;
 
     if ($(object).attr('data-rollback')) {
-        // j++;
-        // Переназначить массив questions
-        // Добавить весь массив от начала до id
         questions = Array.from(Object.values(rollback[$(object).parent().parent().attr('data-rollback-id')]));
-        // Удалить последующие массивы из rollback
-        // Удалить все блоки
         document.querySelectorAll('#question_' + $question_id + ' ~ *').forEach(n => n.remove());
 
         // Обрезаем массивы
         let trash = {}; // новый пустой объект
         for (let key in rollback) {
             trash[key] = rollback[key];
-            if(key == $(object).parent().parent().attr('data-rollback-id')) {
-                // console.log('обрезание');
+            if(key == (parseInt($(object).parent().parent().attr('data-rollback-id')))) {
                 break;
             }
         }
         rollback = Array.from(Object.values(trash));
-        // console.log(rollback);
 
         let clown = {}; // новый пустой объект
         for (let key in rollbackResults) {
             clown[key] = rollbackResults[key];
-            if(key == $(object).parent().parent().attr('data-rollback-id')) {
+            if(key == (parseInt($(object).parent().parent().attr('data-rollback-id')))) {
                 break;
             }
         }
 
+        // Клон переменной чтобы снять передачу по ссылке
         let rollbackResultsClone = {}
         let test = rollbackResults[$(object).parent().parent().attr('data-rollback-id')];
         for (let key in test) {
             rollbackResultsClone[key] = test[key];
         }
 
-        // Если первый элемент
-        // if($(object).attr('data-rollback') === '0') {
-        //     result = [];
-        // } else {
-            result = Array.from(Object.values(rollbackResultsClone));
-        // }
+        // Результаты - 1 и добавляем в массив ответ + в роллбэк
+        result = Array.from(Object.values(rollbackResultsClone));
         rollbackResults = Array.from(Object.values(clown));
     }
 
-    // if(j == 5) {
-    //     console.log(result);
-    //     console.log(rollbackResults);
-    //     return false;
-    // }
-
     if($(object).attr('data-rollback') !== '1') {
+
         let clone = {}; // новый пустой объект
         for (let key in questions) {
             clone[key] = questions[key];
         }
         rollback.push(Array.from(Object.values(clone)));
-
-
 
         let cloneResult = []; // новый пустой объект
         for (let key in result) {
@@ -113,6 +87,27 @@ function hook($question_id, $answer, object) {
         }
         rollbackResults.push(cloneResult);
     }
+
+    answers.forEach(function(elem) {
+        // if (elem['answer'] === $answer && elem['question_id'] === $question_id && !result.includes(elem['id'])) {
+        if (elem['answer'] === $answer && elem['question_id'] === $question_id && !result.includes(elem['id'])) {
+            result.push(elem['id']);
+        }
+    });
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     // Добавляем атрибут для отката
     $('#question_' + $question_id + " input[type=submit]").attr('data-rollback', 1);
@@ -142,9 +137,10 @@ function hook($question_id, $answer, object) {
         }
     }
 
-    console.log(result);
-    console.log(rollbackResults);
-    // console.log(rollback);
+    // console.log(result);
+    console.log(rollback);
+    // console.log(rollbackResults);
+    // console.log(questions);
 }
 
 // Проверка равенства значений в массивах
