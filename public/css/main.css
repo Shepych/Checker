@@ -1,0 +1,79 @@
+body {
+    background: radial-gradient(#0c7aeb, #052b5c);
+    background-repeat: no-repeat;
+    min-height: 100vh;
+}
+
+.box {
+  background-color: white;
+  border: 2px solid #08468c;
+  max-height: 425px;
+  margin-top: 20px;
+  /* padding: 0 20px 20px 20px; */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  overflow-y: scroll;
+  box-shadow: 0 0 1px black
+}
+
+.question {
+  margin-bottom: 20px;
+}
+
+.point {
+  position: absolute;
+  display: block;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: #414141;
+  border: 1px solid black;
+  cursor: pointer;
+}
+img { pointer-events: none;
+user-select: none;}
+/*CSS*/
+.pulse {
+  position: absolute;
+  display: block;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: #fc3001;
+  cursor: pointer;
+  box-shadow: 0 0 0 rgba(204,169,44, 0.4);
+  animation: pulse 2s infinite;
+  border: 1px solid black;
+}
+/* .pulse:hover {
+  animation: none;
+} */
+
+@-webkit-keyframes pulse {
+  0% {
+    -webkit-box-shadow: 0 0 0 0 rgba(204,45,19, 0.6);
+  }
+  70% {
+      -webkit-box-shadow: 0 0 0 40px rgba(204,45,19, 0);
+  }
+  100% {
+      -webkit-box-shadow: 0 0 0 0 rgba(204,45,19, 0);
+  }
+}
+
+@keyframes pulse {
+  0% {
+    -moz-box-shadow: 0 0 0 0 rgba(204,45,19, 1);
+    box-shadow: 0 0 0 0 rgba(204,45,19, 0.5);
+  }
+  70% {
+      -moz-box-shadow: 0 0 0 20px rgba(204,45,19, 0);
+      box-shadow: 0 0 0 20px rgba(204,45,19, 0);
+  }
+  100% {
+      -moz-box-shadow: 0 0 0 0 rgba(204,45,19, 0);
+      box-shadow: 0 0 0 0 rgba(204,45,19, 0);
+  }
+}

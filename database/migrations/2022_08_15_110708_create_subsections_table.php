@@ -13,10 +13,17 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('diagnoses', function (Blueprint $table) {
+        Schema::create('subsections', function (Blueprint $table) {
             $table->id();
             $table->string('title');
-            $table->text('description');
+            $table->json('sections')->nullable();
+            $table->char('sex')->nullable();
+        });
+
+        Schema::table('diagnoses', function (Blueprint $table) {
+            $table->foreignId('subsection_id')
+                ->references('id')
+                ->on('subsections');
         });
     }
 
@@ -27,6 +34,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('diagnoses');
+        Schema::dropIfExists('sub_section');
     }
 };

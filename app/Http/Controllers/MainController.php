@@ -7,25 +7,42 @@ use App\Models\Diagnos;
 use App\Models\Main;
 use App\Models\Question;
 use App\Models\Section;
+use App\Models\Subsection;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cookie;
+use Throwable;
 
 class MainController extends Controller
 {
     public function index() {
         $sections = Section::all();
-
-        return view('welcome', compact('sections'));
+        $subsections = Subsection::all();
+        return view('welcome', compact('sections', 'subsections'));
     }
 
-    public function check(Request $request) {
-        if($request->input('no')) {
+    # Выбор подразделов
+    public function section(Request $request, $id) {
+        # выбираем все разделы и конвертируем json
+        $subsections = Subsection::all();
+        $subsectionsList = [];
+        foreach ($subsections as $sub) {
+            try {
+                foreach (json_decode($sub->sections) as $section) {
+                    # Если в JSON найден id секции то добавляем подраздел в массив для вывода
+                    if($section == $id && (($sub->sex == $request->input('sex')) || !isset($sub->sex))) {
+                        $subsectionsList[] = $sub;
+                    }
+                }
+            } catch (Throwable $e) {
 
+            }
         }
+
+        return $subsectionsList;
     }
 
-    public function section($id) {
-        $section = Section::where('id', $id)->first();
+    public function subsection($id) {
+        $section = Subsection::where('id', $id)->first();
 
         # Диагнозы
         $diagnoses = [];
@@ -45,6 +62,14 @@ class MainController extends Controller
             $diagnoses[] = $diag;
         }
 
-        return Ajax::data($diagnoses, array_unique($questions, SORT_REGULAR), $answers);
+        return [
+            'diagnoses' => $diagnoses,
+            'questions' => array_unique($questions, SORT_REGULAR),
+            'answers' => $answers,
+        ];
+    }
+
+    public function vue() {
+        return view('vue');
     }
 }

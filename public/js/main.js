@@ -2,42 +2,25 @@ let answers;
 let diagnoses;
 let questions;
 
+let newAnswers = new Array();
+
+// Массив отката: вопросов, диагнозов и вопросов
 let rollback = new Array();
+// Массив отката: Результатов
 let rollbackResults = new Array();
 
 // Массив с ID ответов
 let result = new Array();
 
-// Ajax селектор
-$('#ajax-selector').change(function (event) {
-    event.preventDefault();
-    $.ajax({
-        type: 'POST',
-        url: '/section/' + $(this).val(),
-        contentType: false,
-        cache: false,
-        processData: false,
-        headers: {
-            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-        },
-        success: function (result) {
-            answers = result['answers'];
-            diagnoses = result['diagnoses'];
-            questions = result['questions'];
-
-            // console.log(questions);
-            $('#diagnos').empty();
-            $('#questions').empty();
-            next(questions);
-            // console.log(questions);
-        }
-    });
-});
-
 let j = 0;
 // Хук ответа
 function hook($question_id, $answer, object) {
-    // j++;
+    // Меняем цвет кнопок
+    $(object).parent().children('input[type=submit]').removeClass('btn-primary');
+    $(object).parent().children('input[type=submit]').addClass('btn-secondary');
+    $(object).removeClass('btn-secondary');
+    $(object).addClass('btn-primary');
+
 
     if ($(object).attr('data-rollback')) {
         questions = Array.from(Object.values(rollback[$(object).parent().parent().attr('data-rollback-id')]));
@@ -95,26 +78,11 @@ function hook($question_id, $answer, object) {
         }
     });
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
     // Добавляем атрибут для отката
     $('#question_' + $question_id + " input[type=submit]").attr('data-rollback', 1);
 
-    // Удалить вопрос из массива;
-    delete questions[0];
-    questions = Array.from(Object.values(questions));
+    // Проверка на вопросы и диагнозы к ним (удаление)
+    answersFilter(questions[0], $answer);
 
     // Определяем диагноз
     let diag = false;
@@ -138,9 +106,6 @@ function hook($question_id, $answer, object) {
     }
 
     // console.log(result);
-    console.log(rollback);
-    // console.log(rollbackResults);
-    // console.log(questions);
 }
 
 // Проверка равенства значений в массивах
@@ -158,10 +123,6 @@ function diagnosis(title) {
     $('#diagnos').append('<div>\n' +
         '                <h2 class="mt-5">' + title + '</h2>\n' +
         '            </div>');
-    // console.log(rollback);
-    // console.log(rollbackResults);
-    // console.log(questions);
-    // questions = null;
 }
 
 // Отсутсвие диагноза
@@ -174,18 +135,14 @@ function noDiagnosis() {
 
 // Вопрос
 function ask(res) {
-    // console.log(rollback);
-    // console.log(result);
-    // console.log(rollbackResults);
-
     // Нужно для обращения к rollback массиву по ID
     let len = $('.question').length;
 
     $('#questions').append('<div class="question" data-rollback-id="' + len + '" id="question_' + res['id'] +'">\n' +
         '                <h4>ID:' + res['id'] + ' ' + res['title'] +'</h4>\n' +
         '                <div>\n' +
-        '                    <input onclick="hook(' + res['id'] +', 1, this)" class="btn-primary btn" type="submit" name="yes" value="Да">\n' +
-        '                    <input onclick="hook(' + res['id'] +', 0, this)" class="btn-primary btn" type="submit" name="no" value="Нет">\n' +
+        '                    <input onclick="hook(' + res['id'] +', 1, this)" class="btn-secondary btn" type="submit" name="yes" value="Да">\n' +
+        '                    <input onclick="hook(' + res['id'] +', 0, this)" class="btn-secondary btn" type="submit" name="no" value="Нет">\n' +
         '                </div>\n' +
         '            </div>');
 
@@ -199,4 +156,163 @@ function next(result) {
         ask(Array.from(Object.values(result))[i]);
         return false;
     }
+}
+
+// Клик по телу
+function sectionPoint(obj) {
+  $('.point').removeClass('pulse');
+  $(obj).addClass('pulse');
+    $.ajax({
+        type: 'POST',
+        url: '/section/' + $(obj).attr('data-section'),
+        data: {"sex": $('#sex').attr('data-sex')},
+        headers: {
+            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+        },
+        success: function (result) {
+            console.log(result);
+            $('#subsections').empty();
+
+            // Обновить подразделы
+            result.forEach(function(elem) {
+                $('#subsections').append('<div data-subsection="' + elem['id'] +'" onclick="subsection(this)" style="background-color: white" class="btn m-1">' + elem['title'] + '</div>');
+            });
+        }
+    });
+}
+
+// Выбор подраздела
+function subsection(obj) {
+    // Аякс получение всех подразделов по JSON id'шникам
+    $.ajax({
+        type: 'POST',
+        url: '/subsection/' + $(obj).attr('data-subsection'),
+        contentType: false,
+        cache: false,
+        processData: false,
+        headers: {
+            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+        },
+        success: function (res) {
+            // console.log(res['questions']);
+            answers = res['answers'];
+            diagnoses = res['diagnoses'];
+            questions = res['questions'];
+
+            rollback = new Array();
+            rollbackResults = new Array();
+            result = new Array();
+
+            $('#diagnos').empty();
+            $('#questions').empty();
+            next(questions);
+
+            // Меняем цвет кнопок
+            $('#subsections div').removeClass('bg-warning');
+            $(obj).addClass('bg-warning');
+            console.log(answers);
+            console.log(diagnoses);
+            console.log(questions);
+        }
+    });
+
+    // Сменить заголовок
+    $('#header').text($(obj).attr('data-section-name'));
+}
+
+// Выбор пола
+function sexSelect(obj) {
+    // Меняем цвет кнопок
+    $(obj).parent().children('button').removeClass('bg-warning');
+    $(obj).parent().children('button').removeAttr('id');
+    $(obj).removeAttr('id');
+    $(obj).addClass('bg-warning');
+    $(obj).attr('id', 'sex')
+
+    // Очистить раздел
+    $('#subsections').empty();
+
+    $.ajax({
+        type: 'POST',
+        url: '/section/' + 1,
+        data: {"sex": $('#sex').attr('data-sex')},
+        headers: {
+            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+        },
+        success: function (result) {
+            // alert($(obj).attr('data-sex'));
+            console.log(result);
+            $('#subsections').empty();
+
+            // Обновить подразделы
+            result.forEach(function(elem) {
+                $('#subsections').append('<div data-subsection="' + elem['id'] +'" onclick="subsection(this)" style="background-color: white" class="btn m-1">' + elem['title'] + '</div>');
+            });
+        }
+    });
+
+    // Обновить подразделы
+    result.forEach(function(elem) {
+        $('#subsections').append('<div data-subsection="' + elem['id'] +'" onclick="subsection(this)" style="background-color: white" class="btn m-1">' + elem['title'] + '</div>');
+    });
+}
+
+// Фильтрация вопросов
+function answersFilter(quest, $answer) {
+    // console.log(result);
+    for(let i = 0; i < answers.length; i++) {
+        if(quest['id'] === answers[i]['question_id']) {
+            // То добавляем в массив ответ
+            newAnswers.push(answers[i]);
+        }
+    }
+
+    // console.log(newAnswers);
+
+    for(let j = 0; j < questions.length; j++) {
+        if(questions[j]['id'] === quest['id']) {
+            delete questions[j];
+        }
+    }
+
+    questions = Array.from(Object.values(questions));
+    console.log(questions);
+
+
+
+
+    // for (let i = 0; i < diagnoses.length; i++) {
+    //     // console.log(diagnoses[i]['answers']);
+    //     for(let j = 0; j < diagnoses[i]['answers'].length; j++) {
+    //         // console.log(diagnoses[i]['answers'][j]);
+    //         // // console.log(diagnoses[i]['answers'][j]);
+    //         // console.log(quest['id']);
+    //         // console.log('-------');
+    //         for(let g = 0; g < answers.length; g++) {
+    //             if(answers[g]['id'] === diagnoses[i]['answers'][j]) {
+    //
+    //                 // Удаляем из массива questions все вопросы связанные с id ответов
+    //                 // for(let k = 0; k < questions.length; k++) {
+    //                 //     // if(questions[k]['id'] === quest['id']) {
+    //                 //     //
+    //                 //     // }
+    //                 // }
+    //             }
+    //         }
+    //
+    //
+    //
+    //         // if(diagnoses[i]['answers'][j] === quest['id']) {
+    //         //     // alert('Найдено совпадение');
+    //         //     for(let k = 0; k < questions.length; k++) {
+    //         //         // console.log(123132);
+    //         //         if(questions[k]['id'] === quest['id']) {
+    //         //             delete questions[k];
+    //         //             questions = Array.from(Object.values(questions));
+    //         //             return;
+    //         //         }
+    //         //     }
+    //         // }
+    //     }
+    // }
 }
