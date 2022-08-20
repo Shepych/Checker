@@ -2,8 +2,6 @@ let answers;
 let diagnoses;
 let questions;
 
-let newAnswers = new Array();
-
 // Массив отката: вопросов, диагнозов и вопросов
 let rollback = new Array();
 // Массив отката: Результатов
@@ -78,6 +76,8 @@ function hook($question_id, $answer, object) {
         }
     });
 
+    console.log(result);
+
     // Добавляем атрибут для отката
     $('#question_' + $question_id + " input[type=submit]").attr('data-rollback', 1);
 
@@ -105,7 +105,7 @@ function hook($question_id, $answer, object) {
         }
     }
 
-    // console.log(result);
+    // console.log(rollback);
 }
 
 // Проверка равенства значений в массивах
@@ -210,9 +210,9 @@ function subsection(obj) {
             // Меняем цвет кнопок
             $('#subsections div').removeClass('bg-warning');
             $(obj).addClass('bg-warning');
-            console.log(answers);
-            console.log(diagnoses);
-            console.log(questions);
+            // console.log(answers);
+            // console.log(diagnoses);
+            // console.log(questions);
         }
     });
 
@@ -259,60 +259,84 @@ function sexSelect(obj) {
 
 // Фильтрация вопросов
 function answersFilter(quest, $answer) {
-    // console.log(result);
+    let findAnswers = new Array();
+    let deleteQuestions = new Array();
+
     for(let i = 0; i < answers.length; i++) {
         if(quest['id'] === answers[i]['question_id']) {
             // То добавляем в массив ответ
-            newAnswers.push(answers[i]);
+            findAnswers.push(answers[i]);
+            for(let l = 0; l < diagnoses.length; l++) {
+                for(let h = 0; h < diagnoses[l]['answers'].length; h++) {
+                    if(diagnoses[l]['answers'][h] === answers[i]['id'] && $answer === 0) {
+
+
+
+                        // for(let diag = 0; diag < diagnoses.length; diag++) {
+                        //
+                        // }
+                        // То мы должны удалить ВСЕ вопросы у answers этого диагноза
+                        // Вот здесь добавить цикл
+                        // Запускаем ещё раз цикл по ответам диагноза
+                        for(let u = 0; u < diagnoses[l]['answers'].length; u++) {
+                            // ID ответа
+                            // Пройти циклом по всем диагнозам и их ответам
+
+                            // for(let diag = 0; diag < diagnoses.length; diag++) {
+                            //     for(let ans = 0; ans < diagnoses[diag]['answers'].length; ans++) {
+                            //         if(diagnoses[diag]['answers'][ans] === diagnoses[l]['answers'][u]) {
+                            //             deleteQuestions.push(diagnoses[diag]['answers'][ans]);
+                            //         }
+                            //     }
+                            // }
+
+                            deleteQuestions.push(diagnoses[l]['answers'][u]);
+                        }
+                    }
+                }
+            }
         }
     }
 
-    // console.log(newAnswers);
+    // console.log(questions);
+    let test = new Array();
+    // console.log(deleteQuestions);
 
-    for(let j = 0; j < questions.length; j++) {
-        if(questions[j]['id'] === quest['id']) {
-            delete questions[j];
+    // Удаляем вопросы
+    for(let i = 0; i < answers.length; i++) {
+        for(let j = 0; j < deleteQuestions.length; j++) {
+            if(answers[i]['id'] === deleteQuestions[j]) {
+                // Удаляем из questions
+                for(let k = 0; k < questions.length; k++) {
+                    // console.log(questions[k]['id']);
+                    if(questions[k]['id'] === answers[i]['question_id']) {
+                        // console.log(questions[k]['id'] + " answer: " + answers[i]['question_id']);
+                        test.push(questions[k]['id']);
+                    }
+                }
+            }
         }
     }
 
-    questions = Array.from(Object.values(questions));
-    console.log(questions);
 
+    for(let i = 0; i < answers.length; i++) {
+        if(answers[i]['question_id'] == quest['id'] && (answers[i]['answer']) ) {
 
+        }
+    }
 
-
-    // for (let i = 0; i < diagnoses.length; i++) {
-    //     // console.log(diagnoses[i]['answers']);
-    //     for(let j = 0; j < diagnoses[i]['answers'].length; j++) {
-    //         // console.log(diagnoses[i]['answers'][j]);
-    //         // // console.log(diagnoses[i]['answers'][j]);
-    //         // console.log(quest['id']);
-    //         // console.log('-------');
-    //         for(let g = 0; g < answers.length; g++) {
-    //             if(answers[g]['id'] === diagnoses[i]['answers'][j]) {
-    //
-    //                 // Удаляем из массива questions все вопросы связанные с id ответов
-    //                 // for(let k = 0; k < questions.length; k++) {
-    //                 //     // if(questions[k]['id'] === quest['id']) {
-    //                 //     //
-    //                 //     // }
-    //                 // }
-    //             }
-    //         }
-    //
-    //
-    //
-    //         // if(diagnoses[i]['answers'][j] === quest['id']) {
-    //         //     // alert('Найдено совпадение');
-    //         //     for(let k = 0; k < questions.length; k++) {
-    //         //         // console.log(123132);
-    //         //         if(questions[k]['id'] === quest['id']) {
-    //         //             delete questions[k];
-    //         //             questions = Array.from(Object.values(questions));
-    //         //             return;
-    //         //         }
-    //         //     }
-    //         // }
-    //     }
-    // }
+    // Если кнопка ДА - то просто удалить 0 элемент вопроса
+    if($answer === 0) {
+        for(let i = 0; i < test.length; i++) {
+            for(let j = 0; j < questions.length; j++) {
+                if(questions[j]['id'] === test[i]) {
+                    delete questions[j];
+                    questions = Array.from(Object.values(questions));
+                }
+            }
+        }
+    } else {
+        delete questions[0];
+        questions = Array.from(Object.values(questions));
+    }
 }
