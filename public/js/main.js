@@ -76,7 +76,7 @@ function hook($question_id, $answer, object) {
         }
     });
 
-    console.log(result);
+    // console.log(result);
 
     // Добавляем атрибут для отката
     $('#question_' + $question_id + " input[type=submit]").attr('data-rollback', 1);
@@ -86,13 +86,18 @@ function hook($question_id, $answer, object) {
 
     // Определяем диагноз
     let diag = false;
+
+    // console.log(result);
     diagnoses.forEach(function(elem) {
         if(arraysEqual(elem['answers'], result)) {
             diagnosis(elem['title']);
             diag = true;
             return false;
         }
+        // console.log(elem['answers']);
     });
+
+
 
     // Хук перехода к следующему вопросу
     if(!diag) {
@@ -109,8 +114,18 @@ function hook($question_id, $answer, object) {
 }
 
 // Проверка равенства значений в массивах
+// Нужно не проверку а сходство
 function arraysEqual(a, b) {
-    if(a.sort().toString() == b.sort().toString()) {
+    let count = 0;
+    for (let i = 0; i < a.length; i++) {
+        for (let j = 0; j < b.length; j++) {
+            if(a[i] === b[j]) {
+                count++;
+            }
+        }
+    }
+
+    if(count === a.length) {
         return true;
     }
 
@@ -262,34 +277,19 @@ function answersFilter(quest, $answer) {
     let findAnswers = new Array();
     let deleteQuestions = new Array();
 
-    for(let i = 0; i < answers.length; i++) {
-        if(quest['id'] === answers[i]['question_id']) {
+    // Вот тут БАГ
+    for (let i = 0; i < answers.length; i++) {
+        if (quest['id'] === answers[i]['question_id']) {
             // То добавляем в массив ответ
             findAnswers.push(answers[i]);
-            for(let l = 0; l < diagnoses.length; l++) {
-                for(let h = 0; h < diagnoses[l]['answers'].length; h++) {
-                    if(diagnoses[l]['answers'][h] === answers[i]['id'] && $answer === 0) {
-
-
-
-                        // for(let diag = 0; diag < diagnoses.length; diag++) {
-                        //
-                        // }
+            for (let l = 0; l < diagnoses.length; l++) {
+                for (let h = 0; h < diagnoses[l]['answers'].length; h++) {
+                    // // Цикл по вопросам
+                    if (diagnoses[l]['answers'][h] === answers[i]['id'] && (answers[i]['answer'] !== $answer)) {
                         // То мы должны удалить ВСЕ вопросы у answers этого диагноза
                         // Вот здесь добавить цикл
                         // Запускаем ещё раз цикл по ответам диагноза
-                        for(let u = 0; u < diagnoses[l]['answers'].length; u++) {
-                            // ID ответа
-                            // Пройти циклом по всем диагнозам и их ответам
-
-                            // for(let diag = 0; diag < diagnoses.length; diag++) {
-                            //     for(let ans = 0; ans < diagnoses[diag]['answers'].length; ans++) {
-                            //         if(diagnoses[diag]['answers'][ans] === diagnoses[l]['answers'][u]) {
-                            //             deleteQuestions.push(diagnoses[diag]['answers'][ans]);
-                            //         }
-                            //     }
-                            // }
-
+                        for (let u = 0; u < diagnoses[l]['answers'].length; u++) {
                             deleteQuestions.push(diagnoses[l]['answers'][u]);
                         }
                     }
@@ -300,43 +300,57 @@ function answersFilter(quest, $answer) {
 
     // console.log(questions);
     let test = new Array();
-    // console.log(deleteQuestions);
+    let test_check = 0;
+    console.log(deleteQuestions);
+    // console.log(result);
 
     // Удаляем вопросы
-    for(let i = 0; i < answers.length; i++) {
-        for(let j = 0; j < deleteQuestions.length; j++) {
-            if(answers[i]['id'] === deleteQuestions[j]) {
+    for (let i = 0; i < answers.length; i++) {
+        for (let j = 0; j < deleteQuestions.length; j++) {
+            if (answers[i]['id'] === deleteQuestions[j]) {
                 // Удаляем из questions
-                for(let k = 0; k < questions.length; k++) {
+                for (let k = 0; k < questions.length; k++) {
                     // console.log(questions[k]['id']);
-                    if(questions[k]['id'] === answers[i]['question_id']) {
-                        // console.log(questions[k]['id'] + " answer: " + answers[i]['question_id']);
-                        test.push(questions[k]['id']);
+                    if (questions[k]['id'] === answers[i]['question_id']) {
+                        // Добавить исключение если id уже присутствует в массиве
+                        // То не добавлять в массив
+                        for (let tru = 0; tru < test.length; tru++) {
+                            if (test[tru] === questions[k]['id']) {
+                                test_check++;
+                            }
+                        }
+
+                        if (test_check === 0) {
+                            test.push(questions[k]['id']);
+                        }
                     }
                 }
             }
         }
     }
 
+    // console.log(test);
+    // console.log(result);
 
-    for(let i = 0; i < answers.length; i++) {
-        if(answers[i]['question_id'] == quest['id'] && (answers[i]['answer']) ) {
-
-        }
-    }
-
-    // Если кнопка ДА - то просто удалить 0 элемент вопроса
-    if($answer === 0) {
-        for(let i = 0; i < test.length; i++) {
-            for(let j = 0; j < questions.length; j++) {
-                if(questions[j]['id'] === test[i]) {
-                    delete questions[j];
-                    questions = Array.from(Object.values(questions));
+    // delete questions[0];
+    // questions = Array.from(Object.values(questions));
+    // console.log(deleteQuestions);
+    for (let kek = 0; kek < answers.length; kek++) {
+        if (answers[kek]['question_id'] == quest['id'] && (answers[kek]['answer'] === $answer)) {
+            // console.log(answers[kek]['id']);
+            delete questions[0];
+            questions = Array.from(Object.values(questions));
+            break;
+            return;
+        } else {
+            for (let i = 0; i < test.length; i++) {
+                for (let j = 0; j < questions.length; j++) {
+                    if (questions[j]['id'] === test[i]) {
+                        delete questions[j];
+                        questions = Array.from(Object.values(questions));
+                    }
                 }
             }
         }
-    } else {
-        delete questions[0];
-        questions = Array.from(Object.values(questions));
     }
 }
