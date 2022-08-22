@@ -304,34 +304,58 @@ function answersFilter(quest, $answer) {
                     // console.log(questions[k]['id']);
                     if(questions[k]['id'] === answers[i]['question_id'] && ($answer !== answers[i]['answer'])) {
                         // Мы должны проверить можно ли удалить этот вопрос
-                         // ID вопроса который надо проверить
-                        if(questions[k]['id'] !== 6) {
-                        }
+                        // ID вопроса который надо проверить
                         test.push(questions[k]['id']);
-
-                        // for(let trash = 0; trash < answers.length; trash++) {
-                        //     if((answers[trash]['id'] !== answers[i]['id']) && (answers[trash]['question_id'] === questions[k]['id'])) {
-                        //
-                        //     } else {
-                        //         test.push(questions[k]['id']);
-                        //     }
-                        // }
                     }
                 }
             }
         }
     }
 
-    // console.log(deleteQuestions);
-    console.log(test);
-    console.log(questions);
-    console.log("!!!!!!!!");
+    // Исключение для игнорирования удаления нужных вопросов
+
+
+    let deletingTest = new Array();
+    let counting;
+    let set;
+
+    for (let j = 0; j < test.length; j++) {
+        counting = 0;
+        set = 0;
+        for (let i = 0; i < answers.length; i++) {
+            // Если ID = нажатому ID - то не удаляем его
+            if(quest['id'] === test[j]) {
+                set++;
+                break;
+            } else if(answers[i]['question_id'] === test[j]) {
+                counting++;
+            }
+        }
+
+        console.log('ID: ' + test[j]);
+        console.log('set: ' + set);
+        console.log('counting: ' + counting);
+
+        if(set !== 0) {
+            // Оставляем элемент в массиве
+            console.log('continue');
+            console.log("!!!!!!!!");
+            deletingTest.push(test[j]);
+            continue;
+        }
+        if(counting <= 1) {
+            // Удалить элемент из массива TEST
+            deletingTest.push(test[j]);
+            console.log('delete');
+        }
+        console.log("!!!!!!!!");
+    }
 
     let newQuestions = new Array();
     // Пересоздать новый массив вместо удаления !!!!!!!!
-    for (let i = 0; i < test.length; i++) {
+    for (let i = 0; i < deletingTest.length; i++) {
         for (let j = 0; j < questions.length; j++) {
-            if(test[i] === questions[j]['id']) {
+            if(deletingTest[i] === questions[j]['id']) {
                 // newQuestions.push(questions[j]);
                 delete questions[0];
                 questions = Array.from(Object.values(questions));
@@ -339,7 +363,7 @@ function answersFilter(quest, $answer) {
         }
     }
 
-    if(test.length === 0) {
+    if(deletingTest.length === 0) {
         delete questions[0];
         questions = Array.from(Object.values(questions));
     }
