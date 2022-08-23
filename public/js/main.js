@@ -332,13 +332,17 @@ function answersFilter(quest, $answer) {
             }
         }
 
-        console.log('ID: ' + test[j]);
-        console.log('set: ' + set);
-        console.log('counting: ' + counting);
+        if(quest['id'] >= 4) {
+            console.log('ID: ' + test[j]);
+            console.log('set: ' + set);
+            console.log('counting: ' + counting);
+        }
 
         if(set !== 0) {
             // Оставляем элемент в массиве
             console.log('continue');
+            console.log("!!!!!!!!");
+            console.log("!!!!!!!!");
             console.log("!!!!!!!!");
             deletingTest.push(test[j]);
             continue;
@@ -356,17 +360,26 @@ function answersFilter(quest, $answer) {
     for (let i = 0; i < deletingTest.length; i++) {
         for (let j = 0; j < questions.length; j++) {
             if(deletingTest[i] === questions[j]['id']) {
-                // newQuestions.push(questions[j]);
-                delete questions[0];
-                questions = Array.from(Object.values(questions));
+                newQuestions.push(questions[j]);
+                // delete questions[0];
+                // questions = Array.from(Object.values(questions));
             }
         }
     }
+
+    for (let i = 0; i < questions.length; i++) {
+        for (let j = 0; j < newQuestions.length; j++) {
+            if(questions[i] === newQuestions[j]) {
+                delete questions[i];
+            }
+        }
+    }
+    questions = Array.from(Object.values(questions));
 
     if(deletingTest.length === 0) {
         delete questions[0];
         questions = Array.from(Object.values(questions));
     }
 
-    console.log(questions);
+    // console.log(questions);
 }
