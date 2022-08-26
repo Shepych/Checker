@@ -427,13 +427,18 @@ function answersFilter(quest, $answer) {
     // Если их не будет - то deletingTest = null;
     // Определяем диагноз
     console.log(result);
-    console.log(newRes);
+    console.log(unique(newRes));
+
+    // console.log(test);
+    // console.log(deletingTest);
+    // console.log(test);
 
 
     let diagg = false;
     diagnoses.forEach(function(elem) {
-        if(arraysEqual(elem['answers'], newRes)) {
+        if(arraysEqual(elem['answers'], unique(newRes))) {
             diagg = true;
+            console.log(elem['id']);
             return false;
         }
     });
@@ -479,4 +484,17 @@ function answersFilter(quest, $answer) {
 
     delete questions[0];
     questions = Array.from(Object.values(questions));
+}
+
+// Уникальный массив
+function unique(arr) {
+    let result = [];
+
+    for (let str of arr) {
+        if (!result.includes(str)) {
+            result.push(str);
+        }
+    }
+
+    return result;
 }
