@@ -314,55 +314,123 @@ function answersFilter(quest, $answer) {
 
     // Исключение для игнорирования удаления нужных вопросов
 
-
     let deletingTest = new Array();
-    let counting;
-    let set;
 
-    for (let j = 0; j < test.length; j++) {
-        counting = 0;
-        set = 0;
-        for (let i = 0; i < answers.length; i++) {
-            // Если ID = нажатому ID - то не удаляем его
-            if(quest['id'] === test[j]) {
-                set++;
-                break;
-            } else if(answers[i]['question_id'] === test[j]) {
-                counting++;
+    // Цикл по диагнозам
+    for (let i = 0; i < diagnoses.length; i++) {
+        let deleteAnswers = new Array();
+        let deleteQuestions = new Array();
+        let opposite = 0;
+
+        // Цикл проверки на противоположный ответ
+        // console.log(result);
+        // console.log(answers);
+
+        for (let h = 0; h < diagnoses[i]['answers'].length; h++) {
+            for (let f = 0; f < answers.length; f++) {
+
+                if(diagnoses[i]['answers'][h] === answers[f]['id']) {
+
+                    for (let r = 0; r < result.length; r++) {
+                        for (let d = 0; d < answers.length; d++) {
+
+                            if(result[r] === answers[d]['id']) {
+                                if(answers[d]['question_id'] === answers[f]['question_id'] && (answers[d]['answer'] !== answers[f]['answer'])) {
+                                    opposite++;
+                                }
+                            }
+                        }
+                    }
+
+                }
+
             }
         }
 
-        if(quest['id'] >= 4) {
-            console.log('ID: ' + test[j]);
-            console.log('set: ' + set);
-            console.log('counting: ' + counting);
+        // console.log(opposite);
+        // Если был найден ответ противоположный для диагноза - то не трогаем ответы для удаления
+        if(opposite > 0) {
+
+        } else {
+            // Цикл по ответам для диагнозов
+            for (let k = 0; k < diagnoses[i]['answers'].length; k++) {
+                // Цикл по результирующим ответам
+                let count = 0;
+                for(let g = 0; g < result.length; g++) {
+                    if(result[g] === diagnoses[i]['answers'][k]) {
+                        count++;
+                    }
+                }
+
+                // Если ответ НЕ НАЙДЕН в результатах - то
+                // Добавляем в массив ID ответа который нужен для выполнения диагноза
+                if(count === 0) {
+                    deleteAnswers.push(diagnoses[i]['answers'][k]);
+                }
+            }
         }
 
-        if(set !== 0) {
-            // Оставляем элемент в массиве
-            console.log('continue');
-            console.log("!!!!!!!!");
-            console.log("!!!!!!!!");
-            console.log("!!!!!!!!");
-            deletingTest.push(test[j]);
-            continue;
+
+        // Получаем ID вопросов для удаления из массива
+        for(let h = 0; h < deleteAnswers.length; h++) {
+            for(let g = 0; g < answers.length; g++) {
+                if(answers[g]['id'] === deleteAnswers[h]) {
+                    deleteQuestions.push(answers[g]['question_id']);
+                }
+            }
         }
-        if(counting <= 1) {
-            // Удалить элемент из массива TEST
-            deletingTest.push(test[j]);
-            console.log('delete');
+
+        let questCount = 0;
+        // Цикл по вопросам
+        for(let t = 0; t < deleteQuestions.length; t++) {
+            for(let g = 0; g < questions.length; g++) {
+                if(deleteQuestions[t] === questions[g]['id']) {
+                    questCount++;
+                }
+            }
         }
-        console.log("!!!!!!!!");
+
+        // Если все вопросы найдены в массиве - то мы их удаляем из массива
+        // Удаления
+        if(questCount === deleteQuestions.length) {
+            // Удалить из массива TEST -> deleteQuestions
+            // Добавить в массив для удаления
+            for(let t = 0; t < deleteQuestions.length; t++) {
+                deletingTest.push(deleteQuestions[t]);
+            }
+        }
     }
+
+
+    console.log(test);
+    console.log(deletingTest);
+
+    // Удаляем вопросы из массива на удаление
+    for(let i = 0; i < test.length; i++) {
+        // if(test[i] === quest['id']) {
+        //     // console.log('delete: ' + quest['id']);
+        //     delete test[i];
+        //     continue;
+        // }
+
+        for(let t = 0; t < deletingTest.length; t++) {
+            if(deletingTest[t] === test[i]) {
+                // Удаляем вопрос
+                delete test[i];
+            }
+        }
+    }
+
+    test = Array.from(Object.values(test));
+
+    // console.log(test);
 
     let newQuestions = new Array();
     // Пересоздать новый массив вместо удаления !!!!!!!!
-    for (let i = 0; i < deletingTest.length; i++) {
+    for (let i = 0; i < test.length; i++) {
         for (let j = 0; j < questions.length; j++) {
-            if(deletingTest[i] === questions[j]['id']) {
+            if(test[i] === questions[j]['id']) {
                 newQuestions.push(questions[j]);
-                // delete questions[0];
-                // questions = Array.from(Object.values(questions));
             }
         }
     }
@@ -374,12 +442,9 @@ function answersFilter(quest, $answer) {
             }
         }
     }
-    questions = Array.from(Object.values(questions));
 
-    if(deletingTest.length === 0) {
-        delete questions[0];
-        questions = Array.from(Object.values(questions));
-    }
+    delete questions[0];
+    questions = Array.from(Object.values(questions));
 
     // console.log(questions);
 }
