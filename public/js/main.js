@@ -268,16 +268,18 @@ function sexSelect(obj) {
 
 // Фильтрация вопросов
 function answersFilter(quest, $answer) {
-    let findAnswers = new Array();
+    // let findAnswers = new Array();
     let deleteQuestions = new Array();
+
+    // console.log(result);
 
     for(let i = 0; i < answers.length; i++) {
         if(quest['id'] === answers[i]['question_id']) {
             // То добавляем в массив ответ
-            findAnswers.push(answers[i]);
+            // findAnswers.push(answers[i]);
             for(let l = 0; l < diagnoses.length; l++) {
                 for(let h = 0; h < diagnoses[l]['answers'].length; h++) {
-                    if(diagnoses[l]['answers'][h] === answers[i]['id'] && ($answer !== answers[i]['answer'])) {
+                    if(diagnoses[l]['answers'][h] === answers[i]['id']) {
 
                         for(let u = 0; u < diagnoses[l]['answers'].length; u++) {
                             deleteQuestions.push(diagnoses[l]['answers'][u]);
@@ -289,11 +291,13 @@ function answersFilter(quest, $answer) {
         }
     }
 
+    // console.log(deleteQuestions);
 
     let test = new Array();
     // console.log(result);
     // console.log(deleteQuestions);
 
+    // Баг вот здесь
     // Удаляем вопросы
     for(let i = 0; i < answers.length; i++) {
         for(let j = 0; j < deleteQuestions.length; j++) {
@@ -301,7 +305,7 @@ function answersFilter(quest, $answer) {
                 // Удаляем из questions
                 for(let k = 0; k < questions.length; k++) {
                     // console.log(questions[k]['id']);
-                    if(questions[k]['id'] === answers[i]['question_id'] && ($answer !== answers[i]['answer'])) {
+                    if(questions[k]['id'] === answers[i]['question_id']) {
                         // Мы должны проверить можно ли удалить этот вопрос
                         // ID вопроса который надо проверить
                         test.push(questions[k]['id']);
@@ -311,8 +315,14 @@ function answersFilter(quest, $answer) {
         }
     }
 
+    // console.log(test);
+
+
+
     // Исключение для игнорирования удаления нужных вопросов
 
+    // console.log(test);
+    // console.log(result);
     let deletingTest = new Array();
 
     // Цикл по диагнозам
@@ -332,7 +342,7 @@ function answersFilter(quest, $answer) {
                     for (let r = 0; r < result.length; r++) {
                         for (let d = 0; d < answers.length; d++) {
                             if(result[r] === answers[d]['id']) {
-                                // Сделать проверку на опозицию
+                                // Если есть противоположный ответ - то оппозиция, если нет - то нет
                                 if(answers[d]['question_id'] === answers[f]['question_id'] && (answers[d]['answer'] !== answers[f]['answer'])) {
                                     opposite++;
                                 }
@@ -378,7 +388,7 @@ function answersFilter(quest, $answer) {
                 }
             }
 
-            // console.log(deleteQuestions);
+            console.log(deleteQuestions);
 
             // ЗДЕСЬ БАГ !!!!!!!!!!!!!!!!!!!!!
             let questCount = 0;
@@ -404,6 +414,9 @@ function answersFilter(quest, $answer) {
         }
     }
 
+    // console.log(result);
+    // console.log(deletingTest);
+
     // Исключение
     // Проверить будет ли диагноз выполняться на основе результатов
     let newRes = {}; // новый пустой объект
@@ -426,8 +439,8 @@ function answersFilter(quest, $answer) {
     // Прочекать диагнозы
     // Если их не будет - то deletingTest = null;
     // Определяем диагноз
-    console.log(result);
-    console.log(unique(newRes));
+    // console.log(result);
+    // console.log(unique(newRes));
 
     // console.log(test);
     // console.log(deletingTest);
@@ -438,7 +451,6 @@ function answersFilter(quest, $answer) {
     diagnoses.forEach(function(elem) {
         if(arraysEqual(elem['answers'], unique(newRes))) {
             diagg = true;
-            console.log(elem['id']);
             return false;
         }
     });
@@ -486,7 +498,7 @@ function answersFilter(quest, $answer) {
     questions = Array.from(Object.values(questions));
 }
 
-// Уникальный массив
+// Создание уникального массива
 function unique(arr) {
     let result = [];
 
