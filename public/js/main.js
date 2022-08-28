@@ -219,9 +219,6 @@ function subsection(obj) {
             // Меняем цвет кнопок
             $('#subsections div').removeClass('bg-warning');
             $(obj).addClass('bg-warning');
-            // console.log(answers);
-            // console.log(diagnoses);
-            // console.log(questions);
         }
     });
 
