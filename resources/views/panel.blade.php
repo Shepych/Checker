@@ -5,6 +5,7 @@
     <meta name="viewport"
           content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    @vite(['resources/css/app.css', 'resources/js/app.js'])
     <style>
         .season_tabs {
             position: relative;
@@ -42,6 +43,7 @@
             bottom: 0;
             padding: 20px;
             border: 1px solid #ccc;
+            overflow-y: scroll;
         }
         .season_content span {
             animation: 0.5s ease-out 0s 1 slideInFromTop;
@@ -58,46 +60,84 @@
     <title>Document</title>
 </head>
 <body>
-    <h1>Успешная авторизация</h1>
+    <main style="padding:0 200px 0 200px">
+        <header class="d-flex" style="padding-top: 26px">
+            <a href="/" class="btn-danger btn" style="margin-right: 10px">На главную</a>
 
-    <div class="season_tabs">
+            <form action="{{ route('logout') }}" method="post">
+                @csrf
+                <input class="btn btn-danger" type="submit" value="Выход">
+            </form>
+        </header>
 
-        <div class="season_tab">
-            <input type="radio" id="tab-1" name="tab-group-1" checked>
-            <label for="tab-1">Диагнозы</label>
+        <div class="season_tabs">
+            <div class="season_tab">
+                <input type="radio" id="tab-1" name="tab-group-1" checked>
+                <label for="tab-1">Диагнозы</label>
 
-            <div class="season_content">
-                <span>tabik 1</span>
+                <div class="season_content">
+                    <form action="" method="post" class="d-flex flex-column">
+                        <input class="form-control mb-3" type="text" name="title" placeholder="Название диагноза">
+                        <input class="form-control mb-3" type="text" name="title" placeholder="Приоритет">
+                        <input class="btn btn-primary" type="submit" value="Добавить">
+                    </form>
+
+                    <div>
+                        @foreach($diagnoses as $diagnos)
+                            <div class="mb-2"><strong>ID: {{ $diagnos->id }}</strong> | {{ $diagnos->title }}</div>
+                        @endforeach
+                    </div>
+                </div>
+            </div>
+
+            <div class="season_tab">
+                <input type="radio" id="tab-2" name="tab-group-1">
+                <label for="tab-2">Вопросы</label>
+
+                <div class="season_content">
+                    <form action="" method="post" class="d-flex flex-column">
+                        <input class="form-control mb-3" type="text" name="title" placeholder="Название вопроса">
+                        <input class="form-control mb-3" type="text" name="title" placeholder="Приоритет">
+                        <input class="btn btn-primary" type="submit" value="Добавить">
+                    </form>
+
+                    <div>
+                        @foreach($questions as $question)
+                            <div class="mb-2"><strong>ID: {{ $question->id }}</strong> | {{ $question->title }}</div>
+                        @endforeach
+                    </div>
+                </div>
+            </div>
+
+            <div class="season_tab">
+                <input type="radio" id="tab-3" name="tab-group-1">
+                <label for="tab-3">Ответы</label>
+
+                <div class="season_content">
+                    <form action="" method="post" class="d-flex flex-column">
+                        <div class="d-flex mb-3">
+                            <div class="btn btn-warning" style="margin-right: 16px">Да</div>
+                            <div class="btn btn-secondary">Нет</div>
+                        </div>
+
+                        <input class="form-control mb-3" type="text" name="title" placeholder="Название вопроса">
+                        <select name="question" class="form-select mb-3">
+                            <option disabled selected>Выберите диагноз</option>
+                            @foreach($diagnoses as $diagnos)
+                                <option>{{ $diagnos->title }}</option>
+                            @endforeach
+                        </select>
+                        <select name="question" class="form-select mb-3">
+                            <option disabled selected>Выберите вопрос</option>
+                            @foreach($questions as $question)
+                            <option>{{ $question->title }}</option>
+                            @endforeach
+                        </select>
+                        <input class="btn btn-primary" type="submit" value="Добавить">
+                    </form>
+                </div>
             </div>
         </div>
-
-        <div class="season_tab">
-            <input type="radio" id="tab-2" name="tab-group-1">
-            <label for="tab-2">Вопросы</label>
-
-            <div class="season_content">
-                <span>tabik 2</span>
-            </div>
-        </div>
-
-        <div class="season_tab">
-            <input type="radio" id="tab-3" name="tab-group-1">
-            <label for="tab-3">Ответы</label>
-
-            <div class="season_content">
-                <span>tabik 3</span>
-            </div>
-        </div>
-        <div class="season_tab">
-            <input type="radio" id="tab-4" name="tab-group-1">
-            <label for="tab-4">Лето</label>
-
-            <div class="season_content">
-                <span>tabik 4</span>
-            </div>
-        </div>
-
-    </div>
-
+    </main>
 </body>
 </html>
