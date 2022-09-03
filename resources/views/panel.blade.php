@@ -78,7 +78,6 @@
                 <div class="season_content">
                     <form action="" method="post" class="d-flex flex-column">
                         <input class="form-control mb-3" type="text" name="title" placeholder="Название диагноза">
-                        <input class="form-control mb-3" type="text" name="title" placeholder="Приоритет">
                         <input class="btn btn-primary" type="submit" value="Добавить">
                     </form>
 
@@ -115,9 +114,10 @@
 
                 <div class="season_content">
                     <form action="" method="post" class="d-flex flex-column">
-                        <div class="d-flex mb-3">
-                            <div class="btn btn-warning" style="margin-right: 16px">Да</div>
-                            <div class="btn btn-secondary">Нет</div>
+                        <div id="switches" class="d-flex mb-3">
+                            <div class="btn btn-secondary btn-warning" onclick="selectAnswer(1, this)" style="margin-right: 16px">Да</div>
+                            <div class="btn btn-secondary" onclick="selectAnswer(0, this)">Нет</div>
+                            <input id="answer__switch" type="hidden" name="answer" value="1">
                         </div>
 
                         <input class="form-control mb-3" type="text" name="title" placeholder="Название вопроса">
@@ -139,5 +139,7 @@
             </div>
         </div>
     </main>
+
+    <script src="/js/main.js"></script>
 </body>
 </html>

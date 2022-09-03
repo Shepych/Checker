@@ -55,16 +55,25 @@ class MainController extends Controller
             foreach ($diag->answers() as $answer) {
                 $answersArray[] = $answer->id;
                 $answers[] = $answer;
-                $questions[] = ['id' => $answer->question()->id, 'title' => $answer->question()->title,];
+                $questions[] = [
+                    'id' => $answer->question()->id,
+                    'title' => $answer->question()->title,
+                    'priority' => $answer->question()->priority,
+                    ];
             }
 
             $diag['answers'] = $answersArray;
             $diagnoses[] = $diag;
         }
 
+        # Сортировка массива вопросов по приоритету
+        $questions = array_unique($questions, SORT_REGULAR);
+        usort($questions, function($a, $b){
+            return ($a['priority'] - $b['priority']);
+        });
         return [
             'diagnoses' => $diagnoses,
-            'questions' => array_unique($questions, SORT_REGULAR),
+            'questions' => array_reverse($questions),
             'answers' => $answers,
         ];
     }

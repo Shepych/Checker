@@ -13,9 +13,9 @@ class AdminController extends Controller
 {
     # Панель администратора
     public function panel() {
-        $diagnoses = Diagnos::all();
-        $questions = Question::all();
-        $answers = Answer::all();
+        $diagnoses = Diagnos::orderByDesc('id')->get();
+        $questions = Question::orderByDesc('id')->get();
+        $answers = Answer::orderByDesc('id')->get();
         return view('panel', compact('diagnoses', 'questions', 'answers'));
     }
 

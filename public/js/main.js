@@ -108,7 +108,6 @@ function hook($question_id, $answer, object) {
 
 // Проверка равенства значений в массивах
 function arraysEqual(a, b) {
-
     let count = 0;
     // Запустить цикл по ответам на диагнозы
     for (let i = 0; i < a.length; i++) {
@@ -211,6 +210,8 @@ function subsection(obj) {
             rollback = new Array();
             rollbackResults = new Array();
             result = new Array();
+
+            console.log(questions);
 
             $('#diagnos').empty();
             $('#questions').empty();
@@ -506,4 +507,12 @@ function unique(arr) {
     }
 
     return result;
+}
+
+function selectAnswer(val, obj) {
+    // Перекрасить кнопки
+    // Поменять input hidden value
+    $('#switches div').removeClass('btn-warning');
+    $(obj).addClass('btn-warning');
+    $('#answer__switch').val(val);
 }
