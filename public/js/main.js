@@ -240,6 +240,7 @@ function sexSelect(obj) {
     // Очистить раздел
     $('#subsections').empty();
     let sectionId = $('.pulse').attr('data-section');
+
     if(sectionId === undefined) {
         sectionId = '*';
     }

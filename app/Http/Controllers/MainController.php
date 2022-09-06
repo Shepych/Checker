@@ -24,24 +24,24 @@ class MainController extends Controller
     # Выбор раздела
     public function section(Request $request, $id) {
         $sex = $request->input('sex');
-        if($request->input('sex') === '*') {
+        if($id == '*') {
             # Обнулить пол (вывести все и для М и для Ж)
-            $sex = null;
-        }
-
-        # выбираем все разделы и конвертируем json
-        $subsections = Subsection::all();
-        $subsectionsList = [];
-        foreach ($subsections as $sub) {
-            try {
-                foreach (json_decode($sub->sections) as $section) {
-                    # Если в JSON найден id секции то добавляем подраздел в массив для вывода
-                    if($section == $id && (($sub->sex == $sex) || !isset($sub->sex))) {
-                        $subsectionsList[] = $sub;
+            $subsectionsList = Subsection::all();
+        } else {
+            # выбираем все разделы и конвертируем json
+            $subsections = Subsection::all();
+            $subsectionsList = [];
+            foreach ($subsections as $sub) {
+                try {
+                    foreach (json_decode($sub->sections) as $section) {
+                        # Если в JSON найден id секции то добавляем подраздел в массив для вывода
+                        if($section == $id && (($sub->sex == $sex) || !isset($sub->sex))) {
+                            $subsectionsList[] = $sub;
+                        }
                     }
-                }
-            } catch (Throwable $e) {
+                } catch (Throwable $e) {
 
+                }
             }
         }
 
