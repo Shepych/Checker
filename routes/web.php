@@ -11,6 +11,7 @@ Route::get('/', [MainController::class, 'index'])->name('index');
     Route::get('/auth', [AdminController::class, 'auth'])->name('auth');
     Route::post('/login', [AdminController::class, 'login'])->name('login');
     Route::post('/logout', [AdminController::class, 'logout'])->name('logout');
+    Route::post('/diagnosis/add', [AdminController::class, 'diagnosisAdd'])->name('diagnosis.add');
 }
 
 Route::middleware('admin.auth')->get('/panel', [AdminController::class, 'panel'])->name('panel');

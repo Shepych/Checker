@@ -76,14 +76,20 @@
                 <label for="tab-1">Диагнозы</label>
 
                 <div class="season_content">
-                    <form action="" method="post" class="d-flex flex-column">
+                    <form action="{{ route('diagnosis.add') }}" method="post" class="d-flex flex-column mb-3">
+                        @csrf
                         <input class="form-control mb-3" type="text" name="title" placeholder="Название диагноза">
                         <input class="btn btn-primary" type="submit" value="Добавить">
                     </form>
 
                     <div>
                         @foreach($diagnoses as $diagnos)
-                            <div class="mb-2"><strong>ID: {{ $diagnos->id }}</strong> | {{ $diagnos->title }}</div>
+                            <div class="mb-2">
+                                <strong>ID: {{ $diagnos->id }}</strong> | {{ $diagnos->title }}
+                                <br>
+                                <div class="btn-danger btn" onclick="alert(1)">Удалить</div>
+                                <hr>
+                            </div>
                         @endforeach
                     </div>
                 </div>
@@ -94,7 +100,7 @@
                 <label for="tab-2">Вопросы</label>
 
                 <div class="season_content">
-                    <form action="" method="post" class="d-flex flex-column">
+                    <form action="" method="post" class="d-flex flex-column mb-3">
                         <input class="form-control mb-3" type="text" name="title" placeholder="Название вопроса">
                         <input class="form-control mb-3" type="text" name="title" placeholder="Приоритет">
                         <input class="btn btn-primary" type="submit" value="Добавить">
@@ -102,7 +108,11 @@
 
                     <div>
                         @foreach($questions as $question)
-                            <div class="mb-2"><strong>ID: {{ $question->id }}</strong> | {{ $question->title }}</div>
+                            <div class="mb-2">
+                                <strong>ID: {{ $question->id }}</strong> | {{ $question->title }} <br>
+                                <div class="btn-danger btn" onclick="alert(1)">Удалить</div>
+                            </div>
+                            <hr>
                         @endforeach
                     </div>
                 </div>
@@ -120,20 +130,28 @@
                             <input id="answer__switch" type="hidden" name="answer" value="1">
                         </div>
 
-                        <input class="form-control mb-3" type="text" name="title" placeholder="Название вопроса">
                         <select name="question" class="form-select mb-3">
                             <option disabled selected>Выберите диагноз</option>
                             @foreach($diagnoses as $diagnos)
                                 <option>{{ $diagnos->title }}</option>
                             @endforeach
                         </select>
+
                         <select name="question" class="form-select mb-3">
                             <option disabled selected>Выберите вопрос</option>
                             @foreach($questions as $question)
                             <option>{{ $question->title }}</option>
                             @endforeach
                         </select>
+
                         <input class="btn btn-primary" type="submit" value="Добавить">
+
+                        <div>
+                            @foreach($answers as $answer)
+                                <div>{{ $answer->diagnosis()->title }}</div>
+                                <hr>
+                            @endforeach
+                        </div>
                     </form>
                 </div>
             </div>

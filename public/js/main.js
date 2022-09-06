@@ -170,6 +170,7 @@ function next(result) {
 function sectionPoint(obj) {
     $('.point').removeClass('pulse');
     $(obj).addClass('pulse');
+
     $.ajax({
         type: 'POST',
         url: '/section/' + $(obj).attr('data-section'),
@@ -234,14 +235,20 @@ function sexSelect(obj) {
     $(obj).parent().children('button').removeAttr('id');
     $(obj).removeAttr('id');
     $(obj).addClass('bg-warning');
-    $(obj).attr('id', 'sex')
+    $(obj).attr('id', 'sex');
 
     // Очистить раздел
     $('#subsections').empty();
+    let sectionId = $('.pulse').attr('data-section');
+    if(sectionId === undefined) {
+        sectionId = '*';
+    }
+    // Если секция отсутствует - то выводим всё
+    // Получить уже выбранный подраздел чтобы потом его активировать сразу
 
     $.ajax({
         type: 'POST',
-        url: '/section/' + 1,
+        url: '/section/' + sectionId,
         data: {"sex": $('#sex').attr('data-sex')},
         headers: {
             'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
@@ -509,6 +516,7 @@ function unique(arr) {
     return result;
 }
 
+// Выбор ответов ДА/НЕТ в админке
 function selectAnswer(val, obj) {
     // Перекрасить кнопки
     // Поменять input hidden value

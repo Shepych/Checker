@@ -36,7 +36,7 @@
         </div>
 
         <div style="width: 100%;margin-right: 20px;margin-left: 10px;margin-top:20px">
-            <div id="subsections" class="d-flex flex-wrap">
+            <div id="subsections" style="z-index: 0" class="d-flex flex-wrap">
                 @foreach($subsections as $subsection)
                     <div data-subsection="{{ $subsection->id }}" onclick="subsection(this)" style="background-color: white" class="btn m-1">{{ $subsection->title }}</div>
                 @endforeach

@@ -12,4 +12,8 @@ class Answer extends Model
     public function question() {
         return $this->hasOne(Question::class, 'id', 'question_id')->first();
     }
+
+    public function diagnosis() {
+        return $this->hasOne(Diagnos::class, 'id', 'diagnosis_id')->first();
+    }
 }

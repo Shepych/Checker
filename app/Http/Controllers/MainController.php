@@ -14,14 +14,21 @@ use Throwable;
 
 class MainController extends Controller
 {
+    # Рендер главной страницы приложения
     public function index() {
         $sections = Section::all();
         $subsections = Subsection::all();
         return view('welcome', compact('sections', 'subsections'));
     }
 
-    # Выбор подразделов
+    # Выбор раздела
     public function section(Request $request, $id) {
+        $sex = $request->input('sex');
+        if($request->input('sex') === '*') {
+            # Обнулить пол (вывести все и для М и для Ж)
+            $sex = null;
+        }
+
         # выбираем все разделы и конвертируем json
         $subsections = Subsection::all();
         $subsectionsList = [];
@@ -29,7 +36,7 @@ class MainController extends Controller
             try {
                 foreach (json_decode($sub->sections) as $section) {
                     # Если в JSON найден id секции то добавляем подраздел в массив для вывода
-                    if($section == $id && (($sub->sex == $request->input('sex')) || !isset($sub->sex))) {
+                    if($section == $id && (($sub->sex == $sex) || !isset($sub->sex))) {
                         $subsectionsList[] = $sub;
                     }
                 }
@@ -41,9 +48,9 @@ class MainController extends Controller
         return $subsectionsList;
     }
 
+    # Выбор подраздела
     public function subsection($id) {
         $section = Subsection::where('id', $id)->first();
-
         # Диагнозы
         $diagnoses = [];
         # Вопросы
@@ -76,9 +83,5 @@ class MainController extends Controller
             'questions' => array_reverse($questions),
             'answers' => $answers,
         ];
-    }
-
-    public function vue() {
-        return view('vue');
     }
 }
