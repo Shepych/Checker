@@ -13,13 +13,13 @@
 <body class="d-flex justify-content-center align-items-center">
     <main style="width:1200px;" class="container d-flex justify-content-center">
         <div style="user-select: none; -webkit-user-select: none;">
-            <div class="d-flex justify-content-center align-items-center">
-                @if(Auth::check())
-                    <a href="/panel" class="btn-danger btn">Админка</a>
-                @else
-                    <a href="/auth" class="btn-danger btn">Вход</a>
-                @endif
-            </div>
+{{--            <div class="d-flex justify-content-center align-items-center">--}}
+{{--                @if(Auth::check())--}}
+{{--                    <a href="/panel" class="btn-danger btn">Админка</a>--}}
+{{--                @else--}}
+{{--                    <a href="/auth" class="btn-danger btn">Вход</a>--}}
+{{--                @endif--}}
+{{--            </div>--}}
 
             <img src="/img/human.png" width="320px">
             <span data-section="1" data-section-name="Голова" onclick="sectionPoint(this)" class="point" style="margin-top: -494px;margin-left: 155px;"></span>

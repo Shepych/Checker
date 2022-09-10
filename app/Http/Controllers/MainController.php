@@ -75,12 +75,12 @@ class MainController extends Controller
 
         # Сортировка массива вопросов по приоритету
         $questions = array_unique($questions, SORT_REGULAR);
-        usort($questions, function($a, $b){
-            return ($a['priority'] - $b['priority']);
-        });
+//        usort($questions, function($a, $b){
+//            return ($a['priority'] - $b['priority']);
+//        });
         return [
             'diagnoses' => $diagnoses,
-            'questions' => array_reverse($questions),
+            'questions' => $questions,
             'answers' => $answers,
         ];
     }
