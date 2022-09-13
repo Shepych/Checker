@@ -11,6 +11,7 @@ let rollbackResults = new Array();
 let result = new Array();
 
 let j = 0;
+
 // Хук ответа
 function hook($question_id, $answer, object) {
     // Меняем цвет кнопок
@@ -93,6 +94,8 @@ function hook($question_id, $answer, object) {
             return false;
         }
     });
+
+    // console.log(result);
 
     // Хук перехода к следующему вопросу
     if(!diag) {
@@ -208,11 +211,12 @@ function subsection(obj) {
             diagnoses = res['diagnoses'];
             questions = res['questions'];
 
+            questions = Array.from(Object.values(questions));
             rollback = new Array();
             rollbackResults = new Array();
             result = new Array();
 
-            console.log(questions);
+            // console.log(questions);
 
             $('#diagnos').empty();
             $('#questions').empty();
@@ -350,6 +354,7 @@ function answersFilter(quest, $answer) {
                             if(result[r] === answers[d]['id']) {
                                 // Если есть противоположный ответ - то оппозиция, если нет - то нет
                                 if(answers[d]['question_id'] === answers[f]['question_id'] && (answers[d]['answer'] !== answers[f]['answer'])) {
+                                    // console.log(answers[d]['question_id']);
                                     opposite++;
                                 }
                             }
@@ -394,7 +399,7 @@ function answersFilter(quest, $answer) {
                 }
             }
 
-            console.log(deleteQuestions);
+            // console.log(deleteQuestions);
 
             // ЗДЕСЬ БАГ !!!!!!!!!!!!!!!!!!!!!
             let questCount = 0;
@@ -418,9 +423,10 @@ function answersFilter(quest, $answer) {
                 }
             }
         }
+        // console.log(opposite);
     }
 
-    // console.log(result);
+    console.log(questions);
     // console.log(deletingTest);
 
     // Исключение
