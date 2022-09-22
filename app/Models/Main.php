@@ -9,31 +9,70 @@ class Main extends Model
 {
     use HasFactory;
 
-    public static function check($answer, $request) {
-        # Вызываем метод ДА или НЕТ
-        switch ($answer) {
-            case TRUE:
-                $result = self::answerTrue();
-                break;
-            case FALSE:
-                $result = self::answerFalse();
-                break;
+    public static $error;
+
+    public static function apiData($id) {
+        $section = Subsection::where('id', $id)->first();
+
+        if (!$section) {
+            self::$error = ['error' => 'Некорректные данные'];
+            return false;
         }
 
-        # Если диагноз определяется - то выводим его
-//        if() {
-//            return 'Диагноз';
-//        }
+        # Диагнозы
+        $diagnoses = [];
+        # Вопросы
+        $questions = [];
+        # Ответы
+        $answers = [];
+        foreach ($section->diagnoses() as $diag) {
+            $answersArray = [];
+            foreach ($diag->answers() as $answer) {
+                $answersArray[] = $answer->id;
+                $answers[] = $answer;
+                $questions[] = [
+                    'id' => $answer->question()->id,
+                    'title' => $answer->question()->title,
+                ];
+            }
 
-        # Если нет - то формируем новый массив
-        return 'Массив';
+            $diag['answers'] = $answersArray;
+            $diagnoses[] = $diag;
+        }
+
+        # Сортировка массива вопросов по приоритету
+        $questions = array_unique($questions, SORT_REGULAR);
+
+        return [
+            'diagnoses' => $diagnoses,
+            'questions' => $questions,
+            'answers' => $answers,
+        ];
     }
 
-    protected static function answerTrue() {
-        return true;
-    }
+    # Проверка на получение диагноза исходя из результатов опроса
+    public static function checkDiagnos($subsection_id, $results) {
+        $data = self::apiData($subsection_id);
 
-    protected static function answerFalse() {
+        foreach ($data['diagnoses'] as $diagnos) {
+            $count = 0;
+
+            foreach ($diagnos->answers as $answer) {
+                foreach ($results as $result) {
+                    if ($answer == $result) {
+                        $count++;
+                    }
+                }
+            }
+
+            if ($count == count($diagnos->answers)) {
+                return [
+                    'title' => $diagnos->title,
+                    'description' => $diagnos->description,
+                ];
+            }
+        }
+
         return false;
     }
 }

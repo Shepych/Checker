@@ -337,6 +337,8 @@ function answersFilter(quest, $answer) {
 
     // Цикл по диагнозам
     // console.log(questions);
+    // console.log(result);
+
     for (let i = 0; i < diagnoses.length; i++) {
         let deleteAnswers = new Array();
         let deleteQuestions = new Array();
@@ -364,15 +366,18 @@ function answersFilter(quest, $answer) {
             }
         }
 
+        // console.log(opposite);
         // console.log(diagnoses[i]['id'] + " :::: " + opposite);
         // Если был найден ответ противоположный для диагноза - то не трогаем ответы для удаления
         // if(diagnoses[i]['id'] === 12) {
         //     opposite = 1;
         // }
 
+
         if(opposite > 0) {
 
         } else {
+            // console.log(result);
             // Цикл по ответам для диагнозов
             for (let k = 0; k < diagnoses[i]['answers'].length; k++) {
                 // Цикл по результирующим ответам
@@ -389,6 +394,8 @@ function answersFilter(quest, $answer) {
                     deleteAnswers.push(diagnoses[i]['answers'][k]);
                 }
             }
+
+            // console.log(deleteAnswers);
 
             // Получаем ID вопросов для удаления из массива
             for(let h = 0; h < deleteAnswers.length; h++) {
@@ -426,7 +433,7 @@ function answersFilter(quest, $answer) {
         // console.log(opposite);
     }
 
-    console.log(questions);
+    // console.log(deletingTest);
     // console.log(deletingTest);
 
     // Исключение
@@ -447,6 +454,8 @@ function answersFilter(quest, $answer) {
             }
         }
     }
+
+    // console.log(newRes);
 
     // Прочекать диагнозы
     // Если их не будет - то deletingTest = null;
