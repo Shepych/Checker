@@ -113,12 +113,24 @@ class MainController extends Controller
     }
 
     # API Получения раздела
-    public function apiSection(Request $request, $id) {
+    public function apiSection(Request $request) {
+        # Валидация ID
+        if (!isset($request->id)) {
+            return ['error' => 'Некорректные данные'];
+        }
+
         $sex = $request->sex;
+
+        # Валидация пола
+        if (mb_strtolower($sex) != 'w' && mb_strtolower($sex) != 'm') {
+            return ['error' => 'Некорректные данные'];
+        }
+
         if(!$sex) {
             $sex = 'w';
         }
-        if($id == '*') {
+
+        if($request->id == '*') {
             # Обнулить пол (вывести все и для М и для Ж)
             $subsectionsList = Subsection::all();
         } else {
@@ -129,7 +141,7 @@ class MainController extends Controller
                 try {
                     foreach (json_decode($sub->sections) as $section) {
                         # Если в JSON найден id секции то добавляем подраздел в массив для вывода
-                        if($section == $id && (($sub->sex == $sex) || !isset($sub->sex))) {
+                        if($section == $request->id && (($sub->sex == mb_strtolower($sex)) || !isset($sub->sex))) {
                             $subsectionsList[] = $sub;
                         }
                     }
@@ -139,12 +151,17 @@ class MainController extends Controller
             }
         }
 
+        # Проверка на пустоту
+        if (empty($subsectionsList)) {
+            return ['error' => 'Некорректные данные'];
+        }
+
         return $subsectionsList;
     }
 
     # API Получения подраздела
-    public function apiSubsection($id) {
-        $data = Main::apiData($id);
+    public function apiSubsection(Request $request) {
+        $data = Main::apiData($request->id);
         if (!$data) {
             return Main::$error;
         }
@@ -166,7 +183,33 @@ class MainController extends Controller
             return Main::$error;
         }
 
+        if (!is_array($results)) {
+            return ['error' => 'Некорректные данные'];
+        }
+
+        # Валидация JSON массива
+
+        foreach ($results as $key => $res) {
+            $found = 0;
+            if ($res != 0 && $res != 1) {
+                return ['error' => 'Некорректные данные'];
+            }
+
+            foreach ($data['questions'] as $question) {
+                if ($question['id'] == $key) {
+                    $found++;
+                }
+            }
+
+            if (!$found) {
+                return ['error' => 'Некорректные данные'];
+            }
+        }
+
+
+
         $questions = $data['questions'];
+
         $userAnswers = Array();
 
         # Получаем массив с id ответов пользователя
@@ -287,6 +330,10 @@ class MainController extends Controller
             if($foundCount == 0) {
                 unset($newQuestions[$keyQuestion]);
             }
+        }
+
+        if (!$newQuestions) {
+            return ['error' => 'Некорректные данные'];
         }
 
         return reset($newQuestions);
