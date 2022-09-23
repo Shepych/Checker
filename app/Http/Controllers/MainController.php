@@ -122,7 +122,7 @@ class MainController extends Controller
         $sex = $request->sex;
 
         # Валидация пола
-        if (mb_strtolower($sex) != 'w' && mb_strtolower($sex) != 'm') {
+        if (mb_strtolower($sex) != 'w' && mb_strtolower($sex) != 'm' && isset($sex)) {
             return ['error' => 'Некорректные данные'];
         }
 
